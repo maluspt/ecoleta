@@ -1,7 +1,9 @@
 
 # ♻️ Ecoleta 
 
-Aplicação web e mobile para coleta de resíduos de forma eficiente feita durante a NextLevelWeek 1.0 ministrada pela [Rocketseat](https://rocketseat.com.br/)
+Aplicação web e mobile para coleta de resíduos de forma eficiente.
+
+Contruída durante a NextLevelWeek 1.0 ministrada pela 🚀[Rocketseat](https://rocketseat.com.br/)
 
 ![](/github-assets/banner.png)
 
