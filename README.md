@@ -1,2 +1,2 @@
 # ecoleta
-Aplicação web e mobil para coleta de resíduos de forma eficiente.
+Aplicação web e mobile para coleta de resíduos de forma eficiente.
