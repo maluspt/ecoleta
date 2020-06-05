@@ -18,6 +18,7 @@ interface Point {
     id: number;
     latitude: number;
     longitude: number;
+    image_url: string;
 }
 
 interface Params {

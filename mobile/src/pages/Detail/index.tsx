@@ -19,6 +19,7 @@ interface Data {
         whatsapp: string;
         city: string;
         uf: string;
+        image_url: string;
     };
 
     items: {
@@ -65,7 +66,7 @@ const Detail = () => {
                 <TouchableOpacity>
                     <Icon name="arrow-left" size={20} color="#34cb79" onPress={handleNavigationBack} />
                 </TouchableOpacity>
-                <Image source={{ uri: 'https://www.glutenfreebrasil.com/wp-content/uploads/2019/06/nrd-D6Tu_L3chLE-unsplash.jpg' }} style={styles.pointImage} />
+                <Image source={{ uri: data.point.image_url }} style={styles.pointImage} />
                 <Text style={styles.pointName}>{data.point.name}</Text>
                 <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
                 <View style={styles.address}>

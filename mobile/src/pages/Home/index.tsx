@@ -1,20 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, Text, ImageBackground, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import RNPickerSelect from 'react-native-picker-select';
+import ibge from '../../services/ibge';
 
+interface IBGEUFResponse {
+    sigla: string;
+}
 
-const Home = () => {
-    const [uf, setUF] = useState('');
-    const [city, setCity] = useState('');
+interface IBGECityResponse {
+    nome: string;
+}
+
+interface FormatPickerSelect {
+    label: string;
+    value: string;
+}
+
+const Home: React.FC = () => {
+    const [uf, setUF] = useState<FormatPickerSelect[]>([]);
+    const [city, setCity] = useState<FormatPickerSelect[]>([]);
+    const [selectedUf, setSelectedUf] = useState('0');
+    const [selectedCity, setSelectedCity] = useState('0');
     const navigation = useNavigation();
     const handleNavigation = () => {
         navigation.navigate('Points', {
-            uf,
-            city,
+            uf: selectedUf,
+            city: selectedUf
         });
     }
+
+    useEffect(() => {
+        async function loadUF() {
+            const response = await ibge.get<IBGEUFResponse[]>('localidades/estados');
+            const initials = response.data.map(uf => {
+                return {
+                    label: uf.sigla,
+                    value: uf.sigla
+                };
+            });
+            setUF(initials)
+        }
+        loadUF();
+    }, []);
+
+    useEffect(() => {
+        async function loadCity() {
+            if (selectedUf === '0') return;
+            const response = await ibge.get<IBGECityResponse[]>(`localidades/estados/${selectedUf}/municipios`);
+            const cityNames = response.data.map(city => {
+                return {
+                    label: city.nome,
+                    value: city.nome
+                };
+            });
+
+            setCity(cityNames);
+        }
+        loadCity();
+    }, [selectedUf]);
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <ImageBackground
@@ -30,16 +76,30 @@ const Home = () => {
 
                 </View>
                 <View style={styles.footer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Escolha a UF'
-                        value={uf}
-                        onChangeText={setUF} />
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Escolha a cidade'
-                        value={city}
-                        onChangeText={setCity} />
+                    {uf.length > 0 && (
+                        <RNPickerSelect placeholder={{
+                            label: "Selecione uma UF",
+                            value: '0',
+                        }} style={{ ...pickerSelectStyles }} onValueChange={value => {
+                            setSelectedUf(String(value))
+                            setSelectedCity('0');
+
+                        }}
+                            items={uf} />
+                    )}
+
+                    {selectedUf !== '0' && (
+                        <RNPickerSelect
+                            placeholder={{
+                                label: 'Selecione uma cidade',
+                                value: '0',
+                            }}
+                            style={{ ...pickerSelectStyles }}
+                            onValueChange={(value) => setSelectedCity(String(value))}
+                            items={city}
+                        />
+                    )}
+
                     <RectButton style={styles.button} onPress={handleNavigation} >
                         <View style={styles.buttonIcon}>
                             <Text>
@@ -57,6 +117,27 @@ const Home = () => {
 
     );
 };
+
+
+const pickerSelectStyles = StyleSheet.create({
+    viewContainer: {
+        height: 60,
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        marginBottom: 8,
+        paddingHorizontal: 24,
+        fontSize: 16,
+    },
+
+    inputAndroid: {
+        color: '#322153'
+    },
+
+    inputIOS: {
+        color: '#322153'
+    }
+});
 
 const styles = StyleSheet.create({
     container: {
